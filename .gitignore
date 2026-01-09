@@ -4,3 +4,5 @@ __pycache__/
 .env
 *.log
 .DS_Store
+generated_images/
+agent_memory.db

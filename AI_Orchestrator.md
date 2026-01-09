@@ -17,7 +17,29 @@ All source code is organized in the `src/` directory:
   - Same functionality as `agent.py` but with a web-based interface
   - **NEW**: Now includes long-term memory via SQLite
 
-- **`src/memory.py`** - Long-term memory system (NEW)
+- **`src/image_agent.py`** - Image analysis agent (NEW)
+  - Specialized agent for analyzing and understanding images
+  - Uses Ollama vision models (llava, bakllava, etc.)
+  - Can describe images, answer questions about image content
+  - Includes long-term memory via SQLite
+
+- **`src/image_agent_gui.py`** - Image agent GUI version
+  - Web-based interface for image analysis
+  - Image upload support
+  - Interactive image analysis with questions
+
+- **`src/image_generation_agent.py`** - Image generation agent (NEW)
+  - Generates images from text prompts
+  - Uses Ollama flux models (flux:1.1-pro, flux:dev, flux:schnell)
+  - Saves generated images automatically
+  - Includes long-term memory
+
+- **`src/image_generation_agent_gui.py`** - Image generation GUI (NEW)
+  - Web interface for image generation
+  - Real-time image display
+  - Generate multiple variations
+
+- **`src/memory.py`** - Long-term memory system
   - SQLite-based persistent storage for conversation history
   - Stores all user messages and AI responses
   - Loads conversation history on startup
@@ -29,6 +51,8 @@ All source code is organized in the `src/` directory:
 - **`docker-compose.yml`** - Docker configuration for services
 - **`run.sh`** - Script to run the CLI agent
 - **`run_gui.sh`** - Script to run the GUI agent
+- **`run_image_agent.sh`** - Script to run the image analysis agent
+- **`run_image_generation_agent.sh`** - Script to run the image generation agent
 
 ## Memory System
 
@@ -66,7 +90,10 @@ CREATE TABLE conversations (
 ## Environment Variables
 
 - `OLLAMA_BASE_URL` - Ollama server URL (default: `http://localhost:11434`)
-- `OLLAMA_MODEL` - Model to use (default: `qwen2.5:7b-instruct-q5_K_M`)
+- `OLLAMA_MODEL` - Model to use for text agent (default: `qwen2.5:7b-instruct-q5_K_M`)
+- `OLLAMA_VISION_MODEL` - Vision model for image analysis (default: `llava:7b`)
+- `OLLAMA_IMAGE_MODEL` - Image generation model (default: `flux:1.1-pro`)
+- `IMAGE_OUTPUT_DIR` - Directory for generated images (default: `./generated_images`)
 - `AGENT_MEMORY_DB` - Path to memory database (default: `./agent_memory.db`)
 
 ## Usage
@@ -85,12 +112,77 @@ python src/agent.py
 python src/agent_gui.py
 ```
 
-Both agents now maintain conversation history across sessions automatically.
+### Image Analysis Agent
+```bash
+./run_image_agent.sh
+# or
+python src/image_agent.py
+```
+
+### Image Agent GUI
+```bash
+python src/image_agent_gui.py
+```
+
+### Image Generation Agent
+```bash
+./run_image_generation_agent.sh
+# or
+python src/image_generation_agent.py
+```
+
+### Image Generation Agent GUI
+```bash
+python src/image_generation_agent_gui.py
+```
+
+All agents maintain conversation history across sessions automatically.
+
+## Image Agent Features
+
+The image agent uses vision models to:
+- Analyze and describe images in detail
+- Answer questions about image content
+- Identify objects, people, text, and scenes
+- Provide visual descriptions
+
+**Popular Vision Models:**
+- `llava:7b` - Fast, good quality (default)
+- `llava:13b` - Higher quality, slower
+- `bakllava:1` - Alternative vision model
+
+**Usage Examples:**
+- "Analyze this image: /path/to/image.jpg"
+- "What's in this image?"
+- "Describe the colors and composition"
+
+## Image Generation Agent Features
+
+The image generation agent creates images from text prompts:
+- Generate images from text descriptions
+- Create multiple variations
+- Save images automatically to `generated_images/` directory
+- Uses Ollama flux models for high-quality generation
+
+**Popular Image Generation Models:**
+- `flux:1.1-pro` - Highest quality, slower (default)
+- `flux:dev` - Good quality, balanced speed
+- `flux:schnell` - Fast generation, lower quality
+
+**Usage Examples:**
+- "a cat wearing a hat"
+- "futuristic city at sunset, cyberpunk style"
+- "watercolor painting of mountains and lakes"
+- "generate 3 images of a robot in space"
 
 **Note**: The run scripts automatically set up the Python path to include `src/` for imports.
 
 ## Recent Changes
 
+- **Added image generation agent**: New agent for creating images from text prompts using flux models
+- **Image generation GUI**: Web interface for image generation with real-time display
+- **Added image analysis agent**: Agent specialized for image understanding using vision models
+- **Image agent GUI**: Web interface for image upload and analysis
 - **Reorganized project structure**: All source code moved to `src/` directory
 - **Added long-term memory**: SQLite-based persistent storage for all conversations
 - **Context awareness**: Agent now has access to previous conversations

@@ -7,6 +7,7 @@ Uses Ollama with LangChain for tool calling
 import os
 import sys
 from pathlib import Path
+from dotenv import load_dotenv
 from langchain_ollama import ChatOllama
 from langchain.agents import create_agent
 from langchain_core.tools import Tool
@@ -14,6 +15,9 @@ from langchain_core.messages import HumanMessage, AIMessage
 from langchain_community.tools import DuckDuckGoSearchRun
 from langchain_community.tools.file_management import ReadFileTool, WriteFileTool
 from memory import AgentMemory
+
+# Load environment variables from .env file if it exists
+load_dotenv()
 
 # Configuration
 OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
