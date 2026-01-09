@@ -1,0 +1,41 @@
+services:
+  ollama:
+    image: ollama/ollama:rocm  # Use :rocm tag for AMD
+    container_name: ollama
+    privileged: true  # Required for GPU device access
+    volumes:
+      - ollama:/root/.ollama
+    ports:
+      - "11434:11434"
+    devices:
+      - /dev/kfd:/dev/kfd:rwm
+      - /dev/dri/card1:/dev/dri/card1:rwm
+      - /dev/dri/renderD128:/dev/dri/renderD128:rwm
+    environment:
+      - HSA_OVERRIDE_GFX_VERSION=10.3.0
+      - HIP_VISIBLE_DEVICES=0
+      - ROCM_PATH=/opt/rocm
+    deploy:
+      resources:
+        limits:
+          memory: 24G
+        reservations:
+          memory: 12G
+    restart: unless-stopped
+
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: open-webui
+    volumes:
+      - open-webui:/app/backend/data
+    ports:
+      - "8080:8080"
+    environment:
+      - OLLAMA_BASE_URL=http://ollama:11434
+    depends_on:
+      - ollama
+    restart: unless-stopped
+
+volumes:
+  ollama:
+  open-webui:
