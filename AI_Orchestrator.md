@@ -8,36 +8,22 @@ This document provides an overview of the local LLM agent system architecture an
 
 All source code is organized in the `src/` directory:
 
-- **`src/agent.py`** - Main CLI agent with file editing and web search capabilities
+- **`src/agent.py`** - Main CLI agent with file editing, web search, and image analysis capabilities
   - Uses LangChain with Ollama for LLM interactions
   - Includes tools for file operations, web search, and directory navigation
+  - **NEW**: Image reading and analysis using vision models (llava, etc.)
   - **NEW**: Now includes long-term memory via SQLite
 
 - **`src/agent_gui.py`** - GUI version using Gradio
   - Same functionality as `agent.py` but with a web-based interface
   - **NEW**: Now includes long-term memory via SQLite
 
-- **`src/image_agent.py`** - Image analysis agent (NEW)
-  - Specialized agent for analyzing and understanding images
-  - Uses Ollama vision models (llava, bakllava, etc.)
-  - Can describe images, answer questions about image content
-  - Includes long-term memory via SQLite
-
-- **`src/image_agent_gui.py`** - Image agent GUI version
-  - Web-based interface for image analysis
-  - Image upload support
-  - Interactive image analysis with questions
-
-- **`src/image_generation_agent.py`** - Image generation agent (NEW)
+- **`src/image_generation_agent.py`** - Image generation agent
   - Generates images from text prompts
-  - Uses Ollama flux models (flux:1.1-pro, flux:dev, flux:schnell)
+  - Uses Stable Diffusion (local, no API keys needed)
   - Saves generated images automatically
   - Includes long-term memory
-
-- **`src/image_generation_agent_gui.py`** - Image generation GUI (NEW)
-  - Web interface for image generation
-  - Real-time image display
-  - Generate multiple variations
+  - Supports GPU acceleration (CUDA/ROCm) or CPU
 
 - **`src/memory.py`** - Long-term memory system
   - SQLite-based persistent storage for conversation history
@@ -51,7 +37,6 @@ All source code is organized in the `src/` directory:
 - **`docker-compose.yml`** - Docker configuration for services
 - **`run.sh`** - Script to run the CLI agent
 - **`run_gui.sh`** - Script to run the GUI agent
-- **`run_image_agent.sh`** - Script to run the image analysis agent
 - **`run_image_generation_agent.sh`** - Script to run the image generation agent
 
 ## Memory System
@@ -92,8 +77,11 @@ CREATE TABLE conversations (
 - `OLLAMA_BASE_URL` - Ollama server URL (default: `http://localhost:11434`)
 - `OLLAMA_MODEL` - Model to use for text agent (default: `qwen2.5:7b-instruct-q5_K_M`)
 - `OLLAMA_VISION_MODEL` - Vision model for image analysis (default: `llava:7b`)
-- `OLLAMA_IMAGE_MODEL` - Image generation model (default: `flux:1.1-pro`)
+- `STABLE_DIFFUSION_MODEL` - Stable Diffusion model for image generation (default: `runwayml/stable-diffusion-v1-5`)
 - `IMAGE_OUTPUT_DIR` - Directory for generated images (default: `./generated_images`)
+- `DEVICE` - Device for image generation: auto, cuda, cpu, mps (default: `auto`)
+- `NUM_INFERENCE_STEPS` - Number of inference steps (default: `25`, optimized for speed)
+- `GUIDANCE_SCALE` - Guidance scale (default: `7.5`)
 - `AGENT_MEMORY_DB` - Path to memory database (default: `./agent_memory.db`)
 
 ## Usage
@@ -112,18 +100,6 @@ python src/agent.py
 python src/agent_gui.py
 ```
 
-### Image Analysis Agent
-```bash
-./run_image_agent.sh
-# or
-python src/image_agent.py
-```
-
-### Image Agent GUI
-```bash
-python src/image_agent_gui.py
-```
-
 ### Image Generation Agent
 ```bash
 ./run_image_generation_agent.sh
@@ -131,20 +107,17 @@ python src/image_agent_gui.py
 python src/image_generation_agent.py
 ```
 
-### Image Generation Agent GUI
-```bash
-python src/image_generation_agent_gui.py
-```
 
 All agents maintain conversation history across sessions automatically.
 
-## Image Agent Features
+## Main Agent Features
 
-The image agent uses vision models to:
-- Analyze and describe images in detail
-- Answer questions about image content
-- Identify objects, people, text, and scenes
-- Provide visual descriptions
+The main agent (`agent.py`) now includes image analysis capabilities:
+
+- **Image Reading**: Automatically detects image file paths in user input
+- **Vision Model Integration**: Uses Ollama vision models (llava, bakllava, etc.) for image analysis
+- **Automatic Detection**: Detects image paths in various formats (quoted, absolute, relative)
+- **Supported Formats**: JPG, JPEG, PNG, GIF, BMP, WEBP, TIFF
 
 **Popular Vision Models:**
 - `llava:7b` - Fast, good quality (default)
@@ -152,9 +125,12 @@ The image agent uses vision models to:
 - `bakllava:1` - Alternative vision model
 
 **Usage Examples:**
-- "Analyze this image: /path/to/image.jpg"
-- "What's in this image?"
-- "Describe the colors and composition"
+- "analyze this image: /path/to/image.jpg"
+- "what's in this image: ./photo.png"
+- "describe the image at /home/user/picture.jpg"
+- "what colors are in 'image.png'?"
+
+**Note**: Install a vision model first with: `ollama pull llava:7b`
 
 ## Image Generation Agent Features
 
@@ -162,12 +138,16 @@ The image generation agent creates images from text prompts:
 - Generate images from text descriptions
 - Create multiple variations
 - Save images automatically to `generated_images/` directory
-- Uses Ollama flux models for high-quality generation
+- Uses Stable Diffusion for high-quality generation
+- Runs locally - no API keys needed
+- Supports GPU acceleration (CUDA/ROCm) or CPU
 
-**Popular Image Generation Models:**
-- `flux:1.1-pro` - Highest quality, slower (default)
-- `flux:dev` - Good quality, balanced speed
-- `flux:schnell` - Fast generation, lower quality
+**Stable Diffusion Models:**
+- `runwayml/stable-diffusion-v1-5` - Standard model (default, ~4GB)
+- `stabilityai/stable-diffusion-2-1` - Version 2.1
+- `CompVis/stable-diffusion-v1-4` - Original v1.4
+
+**Note:** First run downloads the model (~4GB). Subsequent runs are faster.
 
 **Usage Examples:**
 - "a cat wearing a hat"
@@ -179,10 +159,8 @@ The image generation agent creates images from text prompts:
 
 ## Recent Changes
 
-- **Added image generation agent**: New agent for creating images from text prompts using flux models
-- **Image generation GUI**: Web interface for image generation with real-time display
-- **Added image analysis agent**: Agent specialized for image understanding using vision models
-- **Image agent GUI**: Web interface for image upload and analysis
+- **Integrated image analysis**: Image reading capabilities now built into main agent (`agent.py`)
+- **Added image generation agent**: New agent for creating images from text prompts using Stable Diffusion
 - **Reorganized project structure**: All source code moved to `src/` directory
 - **Added long-term memory**: SQLite-based persistent storage for all conversations
 - **Context awareness**: Agent now has access to previous conversations
