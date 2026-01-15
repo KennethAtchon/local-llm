@@ -25,6 +25,19 @@ All source code is organized in the `src/` directory:
   - Includes long-term memory
   - Supports GPU acceleration (CUDA/ROCm) or CPU
 
+- **`src/voice_agent.py`** - Voice agent with speech-to-text and text-to-speech
+  - Voice input using Whisper (speech-to-text)
+  - Voice output using Edge TTS (text-to-speech)
+  - Supports both voice and text input
+  - Includes long-term memory
+  - Full AI conversation capabilities
+
+- **`src/tts_speaker.py`** - Simple text-to-speech tool (no AI needed)
+  - Just converts text to natural-sounding speech
+  - No LLM, no Whisper, no AI required
+  - Lightweight and fast
+  - Perfect for simple TTS needs
+
 - **`src/memory.py`** - Long-term memory system
   - SQLite-based persistent storage for conversation history
   - Stores all user messages and AI responses
@@ -38,6 +51,8 @@ All source code is organized in the `src/` directory:
 - **`run.sh`** - Script to run the CLI agent
 - **`run_gui.sh`** - Script to run the GUI agent
 - **`run_image_generation_agent.sh`** - Script to run the image generation agent
+- **`run_voice_agent.sh`** - Script to run the voice agent
+- **`run_tts_speaker.sh`** - Script to run the simple TTS speaker (no AI needed)
 
 ## Memory System
 
@@ -83,6 +98,12 @@ CREATE TABLE conversations (
 - `NUM_INFERENCE_STEPS` - Number of inference steps (default: `25`, optimized for speed)
 - `GUIDANCE_SCALE` - Guidance scale (default: `7.5`)
 - `AGENT_MEMORY_DB` - Path to memory database (default: `./agent_memory.db`)
+- `WHISPER_MODEL` - Whisper model for speech-to-text: tiny, base, small, medium, large (default: `base`)
+- `TTS_VOICE` - Edge TTS voice for natural speech (default: `en-US-AriaNeural`)
+- `AUDIO_CHUNK` - Audio chunk size for recording (default: `1024`)
+- `AUDIO_CHANNELS` - Number of audio channels (default: `1` for mono)
+- `AUDIO_RATE` - Audio sample rate in Hz (default: `16000`)
+- `RECORDING_TIMEOUT` - Seconds of silence before stopping recording (default: `5.0`)
 
 ## Usage
 
@@ -107,6 +128,21 @@ python src/agent_gui.py
 python src/image_generation_agent.py
 ```
 
+### Voice Agent
+```bash
+./run_voice_agent.sh
+# or
+python src/voice_agent.py
+```
+
+### Simple TTS Speaker (No AI Required)
+```bash
+./run_tts_speaker.sh
+# or
+python src/tts_speaker.py
+```
+
+**Note**: The TTS speaker is a lightweight tool that just converts text to speech. No LLM, no Whisper, no AI needed - perfect if you just want natural-sounding text-to-speech!
 
 All agents maintain conversation history across sessions automatically.
 
@@ -157,8 +193,75 @@ The image generation agent creates images from text prompts:
 
 **Note**: The run scripts automatically set up the Python path to include `src/` for imports.
 
+## Voice Agent Features
+
+The voice agent provides natural voice-based interaction with the local LLM:
+- **Speech-to-Text**: Uses OpenAI Whisper for accurate transcription (fully local)
+- **Natural Text-to-Speech**: Uses Microsoft Edge TTS for high-quality, natural-sounding voice output
+- **Dual Input**: Supports both voice recording and text input
+- **Direct Speech**: Type `say <text>` to have the AI speak text directly without LLM processing
+- **Automatic Recording**: Stops recording after detecting silence
+- **Note**: Edge TTS requires internet connection for voice synthesis (but Whisper STT is local)
+
+**Whisper Models:**
+- `tiny` - Fastest, ~75MB, lower accuracy
+- `base` - Good balance (default, ~150MB)
+- `small` - Better accuracy, ~500MB
+- `medium` - High accuracy, ~1.5GB
+- `large` - Best accuracy, ~3GB
+
+**System Requirements:**
+- Microphone for voice input
+- Audio output (speakers/headphones)
+- On Linux: `portaudio19-dev` and `espeak` packages
+- On macOS: Audio libraries included
+- On Windows: SAPI5 (included with Windows)
+
+**Usage:**
+- Press ENTER to start recording (voice input)
+- Speak into microphone - recording stops automatically after silence (default: 5 seconds)
+- Type text and press ENTER for text input
+- Type `say <text>` to have the AI speak text directly (e.g., `say Hello, how are you?`)
+- Type 'exit' or 'quit' to stop
+
+**Popular Edge TTS Voices (set via `TTS_VOICE` env var):**
+- `en-US-AriaNeural` - Female, natural (default)
+- `en-US-DavisNeural` - Male, natural
+- `en-US-JaneNeural` - Female, friendly
+- `en-US-GuyNeural` - Male, casual
+- `en-GB-SoniaNeural` - British English, female
+- `en-AU-NatashaNeural` - Australian English, female
+
+To list all available voices, run: `edge-tts --list-voices`
+
+**Note**: 
+- First run downloads Whisper model (~75MB-3GB depending on model)
+- Edge TTS requires internet connection but provides very natural voices
+- No local model download needed for TTS (uses Microsoft's cloud service)
+
+## Simple TTS Speaker
+
+A lightweight text-to-speech tool that just converts text to natural-sounding speech:
+- **No AI required**: No LLM, no Whisper, no complex setup
+- **Natural voices**: Uses Microsoft Edge TTS for high-quality speech
+- **Simple interface**: Just type text and it speaks
+- **Voice selection**: Change voices on the fly
+- **Save audio**: Optionally save audio files
+- **Internet required**: Edge TTS needs internet connection
+
+**Usage:**
+- Type text and press ENTER to speak it
+- Type `list` to see all available voices
+- Type `voice <name>` to change voice (e.g., `voice en-US-DavisNeural`)
+- Type `save <filename>` to save next audio to file
+- Type `exit` to quit
+
+**Perfect for**: Reading text aloud, simple announcements, testing voices, or any scenario where you just need text-to-speech without AI conversation.
+
 ## Recent Changes
 
+- **Added simple TTS speaker**: Lightweight text-to-speech tool (no AI needed)
+- **Added voice agent**: New voice-based agent with speech-to-text and text-to-speech capabilities
 - **Integrated image analysis**: Image reading capabilities now built into main agent (`agent.py`)
 - **Added image generation agent**: New agent for creating images from text prompts using Stable Diffusion
 - **Reorganized project structure**: All source code moved to `src/` directory
