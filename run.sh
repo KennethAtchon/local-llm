@@ -10,7 +10,7 @@ cd "$SCRIPT_DIR"
 
 VENV_DIR="$SCRIPT_DIR/venv"
 OLLAMA_URL="${OLLAMA_BASE_URL:-http://localhost:11434}"
-OLLAMA_MODEL="${OLLAMA_MODEL:-qwen2.5:7b-instruct-q5_K_M}"
+OLLAMA_MODEL="${OLLAMA_MODEL:-qwen3:8b}"
 
 echo "=========================================="
 echo "Local LLM Agent Setup & Run"

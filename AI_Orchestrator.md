@@ -46,13 +46,16 @@ All source code is organized in the `src/` directory:
 
 ### Configuration
 
-- **`requirements.txt`** - Python dependencies
+- **`requirements.txt`** - Python dependencies for main agents (agent.py, voice_agent.py, image_generation_agent.py)
+- **`requirements_webui.txt`** - Python dependencies for Open WebUI (requires Python 3.11-3.12, uses separate venv_webui)
 - **`docker-compose.yml`** - Docker configuration for services
 - **`run.sh`** - Script to run the CLI agent
 - **`run_gui.sh`** - Script to run the GUI agent
 - **`run_image_generation_agent.sh`** - Script to run the image generation agent
 - **`run_voice_agent.sh`** - Script to run the voice agent
 - **`run_tts_speaker.sh`** - Script to run the simple TTS speaker (no AI needed)
+- **`run_open_webui.sh`** - Script to run Open WebUI (web interface for Ollama)
+- **`setup_opencode.sh`** - Script to install and configure OpenCode CLI (coding assistant)
 
 ## Memory System
 
@@ -90,8 +93,8 @@ CREATE TABLE conversations (
 ## Environment Variables
 
 - `OLLAMA_BASE_URL` - Ollama server URL (default: `http://localhost:11434`)
-- `OLLAMA_MODEL` - Model to use for text agent (default: `qwen2.5:7b-instruct-q5_K_M`)
-- `OLLAMA_VISION_MODEL` - Vision model for image analysis (default: `llava:7b`)
+- `OLLAMA_MODEL` - Model to use for text agent (default: `qwen3:8b`)
+- `OLLAMA_VISION_MODEL` - Vision model for image analysis (default: `qwen3-vl:8b`)
 - `STABLE_DIFFUSION_MODEL` - Stable Diffusion model for image generation (default: `runwayml/stable-diffusion-v1-5`)
 - `IMAGE_OUTPUT_DIR` - Directory for generated images (default: `./generated_images`)
 - `DEVICE` - Device for image generation: auto, cuda, cpu, mps (default: `auto`)
@@ -104,6 +107,7 @@ CREATE TABLE conversations (
 - `AUDIO_CHANNELS` - Number of audio channels (default: `1` for mono)
 - `AUDIO_RATE` - Audio sample rate in Hz (default: `16000`)
 - `RECORDING_TIMEOUT` - Seconds of silence before stopping recording (default: `5.0`)
+- `OPEN_WEBUI_PORT` - Port for Open WebUI web interface (default: `8080`)
 
 ## Usage
 
@@ -144,6 +148,40 @@ python src/tts_speaker.py
 
 **Note**: The TTS speaker is a lightweight tool that just converts text to speech. No LLM, no Whisper, no AI needed - perfect if you just want natural-sounding text-to-speech!
 
+### Open WebUI (Web Interface)
+```bash
+./run_open_webui.sh
+```
+
+**Note**: Open WebUI provides a modern web interface for interacting with your local Ollama models. It automatically starts Ollama if needed and connects to it. Access the interface at `http://localhost:8080` (or the port specified by `OPEN_WEBUI_PORT`).
+
+### OpenCode (CLI Coding Assistant)
+```bash
+# First-time setup
+./setup_opencode.sh
+
+# Then use OpenCode
+opencode "your coding request"
+```
+
+**Note**: OpenCode is a CLI-based coding assistant that works with local Ollama models. It's completely separate from Open WebUI and uses Node.js/npm. It can read files, write code, refactor, and perform coding tasks using your local LLM.
+
+**Setup:**
+- Requires Node.js and npm (install with: `sudo dnf install nodejs npm`)
+- Automatically configures to use your local Ollama instance
+- Uses the model specified by `OLLAMA_MODEL` environment variable (default: `qwen3:8b`)
+
+**Usage Examples:**
+- `opencode "read the file README.md"`
+- `opencode "create a Python script that prints hello world"`
+- `opencode "refactor the code in src/agent.py"`
+- `opencode "add error handling to the main function"`
+
+**Configuration:**
+- Config file: `~/.config/opencode/opencode.json`
+- Can be edited to change model, context window, etc.
+- Set `localOnly: true` to ensure all processing stays local
+
 All agents maintain conversation history across sessions automatically.
 
 ## Main Agent Features
@@ -151,13 +189,16 @@ All agents maintain conversation history across sessions automatically.
 The main agent (`agent.py`) now includes image analysis capabilities:
 
 - **Image Reading**: Automatically detects image file paths in user input
-- **Vision Model Integration**: Uses Ollama vision models (llava, bakllava, etc.) for image analysis
+- **Vision Model Integration**: Uses Ollama vision models (qwen3-vl, llava, bakllava, etc.) for image analysis
 - **Automatic Detection**: Detects image paths in various formats (quoted, absolute, relative)
 - **Supported Formats**: JPG, JPEG, PNG, GIF, BMP, WEBP, TIFF
 
 **Popular Vision Models:**
-- `llava:7b` - Fast, good quality (default)
-- `llava:13b` - Higher quality, slower
+- `qwen3-vl:8b` - Qwen3 vision model, excellent OCR and spatial understanding (default)
+- `qwen3-vl:2b` - Smaller, faster Qwen3 vision model
+- `qwen3-vl:32b` - Larger, higher quality Qwen3 vision model
+- `llava:7b` - Alternative vision model
+- `llava:13b` - Higher quality, slower alternative
 - `bakllava:1` - Alternative vision model
 
 **Usage Examples:**
@@ -166,7 +207,7 @@ The main agent (`agent.py`) now includes image analysis capabilities:
 - "describe the image at /home/user/picture.jpg"
 - "what colors are in 'image.png'?"
 
-**Note**: Install a vision model first with: `ollama pull llava:7b`
+**Note**: Install a vision model first with: `ollama pull qwen3-vl:8b` (or your preferred vision model)
 
 ## Image Generation Agent Features
 
@@ -258,8 +299,55 @@ A lightweight text-to-speech tool that just converts text to natural-sounding sp
 
 **Perfect for**: Reading text aloud, simple announcements, testing voices, or any scenario where you just need text-to-speech without AI conversation.
 
+## Open WebUI Features
+
+Open WebUI provides a modern, user-friendly web interface for interacting with your local Ollama models:
+
+- **Web-based Interface**: Access via browser at `http://localhost:8080` (configurable port)
+- **Model Management**: View and switch between installed Ollama models
+- **Chat Interface**: Clean, modern chat UI similar to ChatGPT
+- **Local & Private**: All data stays on your machine - no external API calls
+- **Auto-start Ollama**: Script automatically starts Ollama if not running
+- **GPU Support**: Works with locally running Ollama that has GPU access
+- **No Docker Required**: Runs natively in Python, easier to manage and debug
+
+**Usage:**
+- Run `./run_open_webui.sh` to start the web interface
+- Open your browser to `http://localhost:8080`
+- Select a model and start chatting
+- All conversations are stored locally
+
+**Note**: Open WebUI connects to Ollama running at `http://localhost:11434`. Make sure Ollama is running locally (not in Docker) if you need GPU acceleration.
+
+## OpenCode Features
+
+OpenCode is a CLI-based coding assistant that uses your local Ollama models for code generation, refactoring, and file operations:
+
+- **CLI Interface**: Command-line tool for coding tasks
+- **Local & Private**: All processing stays on your machine - no external API calls
+- **File Operations**: Can read, write, and modify files
+- **Code Generation**: Creates code from natural language descriptions
+- **Refactoring**: Helps refactor and improve existing code
+- **Tool Calling**: Uses models that support function/tool calling for agentic behavior
+- **Separate from Open WebUI**: Independent Node.js-based tool, doesn't interfere with Python tools
+
+**Setup:**
+- Run `./setup_opencode.sh` to install and configure
+- Requires Node.js and npm
+- Automatically configures to use your local Ollama instance
+- Config file: `~/.config/opencode/opencode.json`
+
+**Usage:**
+- `opencode "your coding request"` - Natural language coding requests
+- Works best with models that support tool calling (instruct models)
+- Large context window (32K tokens) for better code understanding
+
+**Note**: OpenCode requires models that support tool calling. Some smaller models may have limited tool support. Use instruct models or models specifically trained for agentic behavior for best results.
+
 ## Recent Changes
 
+- **Added OpenCode**: CLI coding assistant that works with local Ollama models (separate from Open WebUI)
+- **Added Open WebUI**: Web interface for Ollama models, runs locally (not in Docker)
 - **Added simple TTS speaker**: Lightweight text-to-speech tool (no AI needed)
 - **Added voice agent**: New voice-based agent with speech-to-text and text-to-speech capabilities
 - **Integrated image analysis**: Image reading capabilities now built into main agent (`agent.py`)

@@ -47,7 +47,7 @@ Set environment variables to customize:
 
 ```bash
 export OLLAMA_BASE_URL="http://localhost:11434"
-export OLLAMA_MODEL="qwen2.5:7b-instruct-q5_K_M"
+export OLLAMA_MODEL="qwen3:8b"
 ```
 
 ## Usage Examples
@@ -71,7 +71,7 @@ export OLLAMA_MODEL="qwen2.5:7b-instruct-q5_K_M"
 ### Ollama Connection Error
 If you see "Error connecting to Ollama", make sure:
 - Ollama is running: `ollama serve`
-- The model is downloaded: `ollama pull qwen2.5:7b-instruct-q5_K_M`
+- The model is downloaded: `ollama pull qwen3:8b`
 - The base URL is correct (default: http://localhost:11434)
 
 ### Import Errors
