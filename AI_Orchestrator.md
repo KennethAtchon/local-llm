@@ -38,6 +38,11 @@ All source code is organized in the `src/` directory:
   - Lightweight and fast
   - Perfect for simple TTS needs
 
+- **`src/tts_qwen.py`** - Qwen3-TTS text-to-speech (CustomVoice)
+  - Uses Qwen3-TTS model for high-quality, multi-speaker TTS
+  - Requires separate venv: `venv-qwen3-tts` and `pip install qwen-tts`
+  - Run via `./run_qwen_tts.sh`; supports custom text, language, speaker, and style
+
 - **`src/memory.py`** - Long-term memory system
   - SQLite-based persistent storage for conversation history
   - Stores all user messages and AI responses
@@ -54,6 +59,8 @@ All source code is organized in the `src/` directory:
 - **`run_image_generation_agent.sh`** - Script to run the image generation agent
 - **`run_voice_agent.sh`** - Script to run the voice agent
 - **`run_tts_speaker.sh`** - Script to run the simple TTS speaker (no AI needed)
+- **`run_qwen_tts.sh`** - Script to run Qwen3-TTS (CustomVoice; uses `venv-qwen3-tts`)
+- **`setup_qwen_tts_rocm.sh`** - One-time setup: install PyTorch with ROCm in `venv-qwen3-tts` for AMD GPU
 - **`run_open_webui.sh`** - Script to run Open WebUI (web interface for Ollama)
 - **`setup_opencode.sh`** - Script to install and configure OpenCode CLI (coding assistant)
 
@@ -148,6 +155,23 @@ python src/tts_speaker.py
 
 **Note**: The TTS speaker is a lightweight tool that just converts text to speech. No LLM, no Whisper, no AI needed - perfect if you just want natural-sounding text-to-speech!
 
+### Qwen3-TTS (CustomVoice)
+```bash
+# One-time: create venv and install
+python3.12 -m venv venv-qwen3-tts
+venv-qwen3-tts/bin/pip install -U qwen-tts
+
+# Optional: use AMD GPU (ROCm) instead of CPU
+./setup_qwen_tts_rocm.sh
+
+# Run (default example or pass text)
+./run_qwen_tts.sh
+./run_qwen_tts.sh "Hello, this is Qwen TTS."
+./run_qwen_tts.sh -o my.wav -s Vivian -l Chinese "你好世界"
+```
+
+**Note**: Qwen3-TTS uses a dedicated Python 3.12 venv (`venv-qwen3-tts`) and the `qwen-tts` package. First run downloads the model. On AMD systems, run `./setup_qwen_tts_rocm.sh` once to install PyTorch with ROCm so the script uses GPU. Optional: install FlashAttention 2 for lower GPU memory (NVIDIA only).
+
 ### Open WebUI (Web Interface)
 ```bash
 ./run_open_webui.sh
@@ -161,7 +185,9 @@ python src/tts_speaker.py
 ./setup_opencode.sh
 
 # Then use OpenCode
-opencode "your coding request"
+opencode run "your coding request"
+# or start interactive TUI
+opencode .
 ```
 
 **Note**: OpenCode is a CLI-based coding assistant that works with local Ollama models. It's completely separate from Open WebUI and uses Node.js/npm. It can read files, write code, refactor, and perform coding tasks using your local LLM.
@@ -172,15 +198,16 @@ opencode "your coding request"
 - Uses the model specified by `OLLAMA_MODEL` environment variable (default: `qwen3:8b`)
 
 **Usage Examples:**
-- `opencode "read the file README.md"`
-- `opencode "create a Python script that prints hello world"`
-- `opencode "refactor the code in src/agent.py"`
-- `opencode "add error handling to the main function"`
+- `opencode run "read the file README.md"`
+- `opencode run "create a Python script that prints hello world"`
+- `opencode run "refactor the code in src/agent.py"`
+- `opencode run "add error handling to the main function"`
+- `opencode .` - Start interactive TUI in current directory
 
 **Configuration:**
 - Config file: `~/.config/opencode/opencode.json`
-- Can be edited to change model, context window, etc.
-- Set `localOnly: true` to ensure all processing stays local
+- Model format: `ollama/qwen3:8b` (provider/model)
+- Can be edited to change model, base URL, etc.
 
 All agents maintain conversation history across sessions automatically.
 
@@ -299,6 +326,17 @@ A lightweight text-to-speech tool that just converts text to natural-sounding sp
 
 **Perfect for**: Reading text aloud, simple announcements, testing voices, or any scenario where you just need text-to-speech without AI conversation.
 
+## Qwen3-TTS (CustomVoice)
+
+Local high-quality TTS using the Qwen3-TTS CustomVoice model:
+
+- **Separate environment**: Uses `venv-qwen3-tts` (Python 3.12) and `qwen-tts` from PyPI
+- **Speakers/languages**: Multiple built-in speakers (e.g. Ryan, Vivian) and languages; optional tone/style via `--instruct`
+- **Output**: WAV file (default `output_custom_voice.wav`); override with `-o`
+- **GPU**: Uses CUDA by default; use `--device cpu` or `--no-flash-attn` if needed
+
+**Setup:** Create venv and install once: `python3.12 -m venv venv-qwen3-tts` then `venv-qwen3-tts/bin/pip install -U qwen-tts`. On AMD GPU, run `./setup_qwen_tts_rocm.sh` to install PyTorch with ROCm so TTS uses GPU.
+
 ## Open WebUI Features
 
 Open WebUI provides a modern, user-friendly web interface for interacting with your local Ollama models:
@@ -338,14 +376,15 @@ OpenCode is a CLI-based coding assistant that uses your local Ollama models for 
 - Config file: `~/.config/opencode/opencode.json`
 
 **Usage:**
-- `opencode "your coding request"` - Natural language coding requests
+- `opencode run "your coding request"` - Natural language coding requests
+- `opencode .` - Start interactive TUI in current directory
 - Works best with models that support tool calling (instruct models)
-- Large context window (32K tokens) for better code understanding
 
 **Note**: OpenCode requires models that support tool calling. Some smaller models may have limited tool support. Use instruct models or models specifically trained for agentic behavior for best results.
 
 ## Recent Changes
 
+- **Added Qwen3-TTS**: `run_qwen_tts.sh` and `src/tts_qwen.py` for CustomVoice TTS (separate `venv-qwen3-tts` env)
 - **Added OpenCode**: CLI coding assistant that works with local Ollama models (separate from Open WebUI)
 - **Added Open WebUI**: Web interface for Ollama models, runs locally (not in Docker)
 - **Added simple TTS speaker**: Lightweight text-to-speech tool (no AI needed)

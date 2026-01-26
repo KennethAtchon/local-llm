@@ -1,4 +1,5 @@
 # Requirements for Open WebUI
 # Note: open-webui requires Python 3.11-3.12
 # This file is used by run_open_webui.sh which uses a separate venv_webui
-open-webui>=1.0.0
+# Latest available version on PyPI is 0.7.2 (as of Jan 2026)
+open-webui>=0.7.0

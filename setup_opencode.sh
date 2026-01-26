@@ -63,7 +63,7 @@ if command -v opencode &> /dev/null; then
     echo "   Version: $OPENCODE_VERSION"
 else
     echo "   Installing via npm (this may take a moment)..."
-    sudo npm install -g opencode-cli
+    sudo npm install -g opencode-ai
     echo "✅ OpenCode installed"
 fi
 
@@ -84,24 +84,45 @@ if [ -f "$CONFIG_FILE" ]; then
 fi
 
 # Create configuration for Ollama
+# Note: baseURL needs /v1 for OpenAI-compatible API
+OLLAMA_V1_URL="${OLLAMA_URL%/}/v1"
 cat > "$CONFIG_FILE" << EOF
 {
-  "provider": "ollama",
-  "baseURL": "$OLLAMA_URL",
-  "model": "$OLLAMA_MODEL",
-  "localOnly": true,
-  "contextWindow": 32768
+  "\$schema": "https://opencode.ai/config.json",
+  "model": "ollama/$OLLAMA_MODEL",
+  "provider": {
+    "ollama": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "Ollama (local)",
+      "options": {
+        "baseURL": "$OLLAMA_V1_URL"
+      },
+      "models": {
+        "$OLLAMA_MODEL": {
+          "name": "Qwen 3 8B",
+          "tools": true,
+          "limit": {
+            "context": 32768,
+            "output": 4096
+          }
+        }
+      }
+    }
+  }
 }
 EOF
 
 echo "✅ Configuration saved to $CONFIG_FILE"
 echo ""
 echo "Configuration:"
-echo "  - Provider: ollama"
-echo "  - Base URL: $OLLAMA_URL"
-echo "  - Model: $OLLAMA_MODEL"
-echo "  - Local Only: true"
-echo "  - Context Window: 32768"
+echo "  - Provider: ollama (using @ai-sdk/openai-compatible)"
+echo "  - Base URL: $OLLAMA_V1_URL"
+echo "  - Model: ollama/$OLLAMA_MODEL"
+echo "  - Tools enabled: true"
+echo "  - Context window: 32768"
+echo ""
+echo "⚠️  Note: Make sure Ollama is running and the model supports tool calling"
+echo "   Some models may not work well with OpenCode's tool calling features"
 echo ""
 
 # Test OpenCode
@@ -114,12 +135,14 @@ if opencode --version &> /dev/null; then
     echo "=========================================="
     echo ""
     echo "Usage:"
-    echo "  opencode <your-request>"
+    echo "  opencode run \"your coding request\""
+    echo "  opencode [project-directory]  # Start interactive TUI"
     echo ""
     echo "Examples:"
-    echo "  opencode 'read the file README.md'"
-    echo "  opencode 'create a Python script that prints hello world'"
-    echo "  opencode 'refactor the code in src/agent.py'"
+    echo "  opencode run 'read the file README.md'"
+    echo "  opencode run 'create a Python script that prints hello world'"
+    echo "  opencode run 'refactor the code in src/agent.py'"
+    echo "  opencode .  # Start interactive mode in current directory"
     echo ""
     echo "Note: Make sure Ollama is running and the model '$OLLAMA_MODEL' is available"
     echo "      Install model with: ollama pull $OLLAMA_MODEL"
