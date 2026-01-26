@@ -38,10 +38,10 @@ All source code is organized in the `src/` directory:
   - Lightweight and fast
   - Perfect for simple TTS needs
 
-- **`src/tts_qwen.py`** - Qwen3-TTS text-to-speech (CustomVoice)
-  - Uses Qwen3-TTS model for high-quality, multi-speaker TTS
+- **`src/tts_qwen.py`** - Qwen3-TTS text-to-speech (CustomVoice, VoiceDesign, Base)
+  - Modes: `custom_voice` (built-in speakers), `voice_design` (describe voice in text), `base` (clone from reference audio)
   - Requires separate venv: `venv-qwen3-tts` and `pip install qwen-tts`
-  - Run via `./run_qwen_tts.sh`; supports custom text, language, speaker, and style
+  - Run via `./run_qwen_tts.sh`; use `--mode voice_design` or `--mode base` with `--ref-audio`/`--ref-text` for clone
 
 - **`src/memory.py`** - Long-term memory system
   - SQLite-based persistent storage for conversation history
@@ -155,7 +155,7 @@ python src/tts_speaker.py
 
 **Note**: The TTS speaker is a lightweight tool that just converts text to speech. No LLM, no Whisper, no AI needed - perfect if you just want natural-sounding text-to-speech!
 
-### Qwen3-TTS (CustomVoice)
+### Qwen3-TTS (CustomVoice, VoiceDesign, Base)
 ```bash
 # One-time: create venv and install
 python3.12 -m venv venv-qwen3-tts
@@ -164,13 +164,19 @@ venv-qwen3-tts/bin/pip install -U qwen-tts
 # Optional: use AMD GPU (ROCm) instead of CPU
 ./setup_qwen_tts_rocm.sh
 
-# Run (default example or pass text)
+# Run CustomVoice (default): built-in speakers
 ./run_qwen_tts.sh
 ./run_qwen_tts.sh "Hello, this is Qwen TTS."
 ./run_qwen_tts.sh -o my.wav -s Vivian -l Chinese "你好世界"
+
+# Run VoiceDesign: describe the voice in natural language
+./run_qwen_tts.sh --mode voice_design -i "Male, 17 years old, nervous" "Some text"
+
+# Run Base: clone from reference audio (need --ref-audio and --ref-text)
+./run_qwen_tts.sh --mode base --ref-audio ref.wav --ref-text "Transcript of ref.wav" "New text to speak"
 ```
 
-**Note**: Qwen3-TTS uses a dedicated Python 3.12 venv (`venv-qwen3-tts`) and the `qwen-tts` package. First run downloads the model. On AMD systems, run `./setup_qwen_tts_rocm.sh` once to install PyTorch with ROCm so the script uses GPU. Optional: install FlashAttention 2 for lower GPU memory (NVIDIA only).
+**Note**: Qwen3-TTS uses a dedicated Python 3.12 venv (`venv-qwen3-tts`) and the `qwen-tts` package. Modes: `custom_voice` (default), `voice_design`, `base`. On AMD systems, run `./setup_qwen_tts_rocm.sh` once for ROCm. Optional: FlashAttention 2 (NVIDIA only).
 
 ### Open WebUI (Web Interface)
 ```bash
@@ -326,9 +332,9 @@ A lightweight text-to-speech tool that just converts text to natural-sounding sp
 
 **Perfect for**: Reading text aloud, simple announcements, testing voices, or any scenario where you just need text-to-speech without AI conversation.
 
-## Qwen3-TTS (CustomVoice)
+## Qwen3-TTS (CustomVoice, VoiceDesign, Base)
 
-Local high-quality TTS using the Qwen3-TTS CustomVoice model:
+Local high-quality TTS with three modes: CustomVoice (built-in speakers), VoiceDesign (describe voice in text), Base (clone from reference audio):
 
 - **Separate environment**: Uses `venv-qwen3-tts` (Python 3.12) and `qwen-tts` from PyPI
 - **Speakers/languages**: Multiple built-in speakers (e.g. Ryan, Vivian) and languages; optional tone/style via `--instruct`

@@ -1,0 +1,94 @@
+[
+  {
+    "output_path": "music_tts/20260125_225400_output_custom_voice.wav",
+    "constants_used": {
+      "OUTPUT_DIR": "music_tts",
+      "DEFAULT_OUTPUT_FILENAME": "output_custom_voice.wav",
+      "DEFAULT_LANGUAGE": "English",
+      "DEFAULT_SPEAKER": "Aiden",
+      "DEFAULT_INSTRUCT": "Very happy.",
+      "DEFAULT_MODEL": "Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice",
+      "DEFAULT_DEVICE": "auto",
+      "PREFER_DEVICE": "cpu",
+      "DEFAULT_EXAMPLE_TEXT": "I owe my soul to the company store."
+    },
+    "run_settings": {
+      "language": "English",
+      "speaker": "Aiden",
+      "instruct": "Very happy.",
+      "model": "Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice",
+      "device": "cpu",
+      "text": "I owe my soul to the company store.",
+      "sample_rate": 24000
+    },
+    "execution_time_seconds": 22.95,
+    "output_duration_seconds": 1.977,
+    "timestamp_utc": "2026-01-26T06:54:23.491492Z"
+  },
+  {
+    "output_path": "music_tts/20260125_231918_output_custom_voice.wav",
+    "constants_used": {
+      "OUTPUT_DIR": "music_tts",
+      "DEFAULT_OUTPUT_FILENAME": "output_custom_voice.wav",
+      "DEFAULT_LANGUAGE": "English",
+      "DEFAULT_SPEAKER": "Aiden",
+      "DEFAULT_INSTRUCT": "Very happy.",
+      "DEFAULT_MODE": "custom_voice",
+      "MODEL_CUSTOM_VOICE": "Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice",
+      "MODEL_VOICE_DESIGN": "Qwen/Qwen3-TTS-12Hz-1.7B-VoiceDesign",
+      "MODEL_BASE": "Qwen/Qwen3-TTS-12Hz-1.7B-Base",
+      "DEFAULT_MODEL": "Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice",
+      "DEFAULT_REF_AUDIO": "",
+      "DEFAULT_REF_TEXT": "",
+      "DEFAULT_DEVICE": "auto",
+      "PREFER_DEVICE": "cpu",
+      "DEFAULT_EXAMPLE_TEXT": "you come in for a 28 day trial, one day a week of workout, then you upsell a 28 day challenge/accelerator, they pay 1.99 or 2.99 for the enhanced version that has ( list out a bunch of features) and if they don't lose (the amount of fat), they get more of the free trial"
+    },
+    "run_settings": {
+      "mode": "custom_voice",
+      "language": "English",
+      "speaker": "Aiden",
+      "instruct": "Very happy.",
+      "model": "Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice",
+      "device": "cpu",
+      "text": "you come in for a 28 day trial, one day a week of workout, then you upsell a 28 day challenge/accelerator, they pay 1.99 or 2.99 for the enhanced version that has ( list out a bunch of features) and if they don't lose (the amount of fat), they get more of the free trial",
+      "sample_rate": 24000
+    },
+    "execution_time_seconds": 140.421,
+    "output_duration_seconds": 20.537,
+    "timestamp_utc": "2026-01-26T07:21:38.723859Z"
+  },
+  {
+    "output_path": "music_tts/20260125_233418_output_custom_voice.wav",
+    "constants_used": {
+      "OUTPUT_DIR": "music_tts",
+      "DEFAULT_OUTPUT_FILENAME": "output_custom_voice.wav",
+      "DEFAULT_LANGUAGE": "English",
+      "DEFAULT_SPEAKER": "Aiden",
+      "DEFAULT_INSTRUCT": "Very happy.",
+      "DEFAULT_MODE": "custom_voice",
+      "MODEL_CUSTOM_VOICE": "Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice",
+      "MODEL_VOICE_DESIGN": "Qwen/Qwen3-TTS-12Hz-1.7B-VoiceDesign",
+      "MODEL_BASE": "Qwen/Qwen3-TTS-12Hz-1.7B-Base",
+      "DEFAULT_MODEL": "Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice",
+      "DEFAULT_REF_AUDIO": "",
+      "DEFAULT_REF_TEXT": "",
+      "DEFAULT_DEVICE": "auto",
+      "PREFER_DEVICE": "auto",
+      "DEFAULT_EXAMPLE_TEXT": "you come in for a 28 day trial, one day a week of workout, then you upsell a 28 day challenge/accelerator, they pay 1.99 or 2.99 for the enhanced version that has ( list out a bunch of features) and if they don't lose (the amount of fat), they get more of the free trial"
+    },
+    "run_settings": {
+      "mode": "custom_voice",
+      "language": "English",
+      "speaker": "Aiden",
+      "instruct": "Very happy.",
+      "model": "Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice",
+      "device": "cuda:0",
+      "text": "you come in for a 28 day trial, one day a week of workout, then you upsell a 28 day challenge/accelerator, they pay 1.99 or 2.99 for the enhanced version that has ( list out a bunch of features) and if they don't lose (the amount of fat), they get more of the free trial",
+      "sample_rate": 24000
+    },
+    "execution_time_seconds": 232.673,
+    "output_duration_seconds": 20.377,
+    "timestamp_utc": "2026-01-26T07:38:10.707849Z"
+  }
+]
