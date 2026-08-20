@@ -1,0 +1,6 @@
+{
+  "title": "Step 5 — one banned-phrase module (has ground truth)",
+  "runbook": { "file": "docs/delivery/plans/taste-engine-v2/01-publish-string-and-correctness.md", "lines": [189, 210] },
+  "instruction": "Write backend/src/domain/distribution/text-gates.ts exactly as Step 5 specifies. Output only that file.",
+  "reference_file": "backend/src/domain/distribution/text-gates.ts"
+}

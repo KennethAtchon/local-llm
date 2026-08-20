@@ -6,3 +6,4 @@ __pycache__/
 .DS_Store
 generated_images/
 agent_memory.db
+.tts-runtime/

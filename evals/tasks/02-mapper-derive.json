@@ -1,0 +1,7 @@
+{
+  "title": "Step 4 — derive composition from publishText (has ground truth)",
+  "runbook": { "file": "docs/delivery/plans/taste-engine-v2/01-publish-string-and-correctness.md", "lines": [158, 188] },
+  "context_files": ["backend/src/domain/distribution/taste/generation/taste-generation.mapper.ts"],
+  "instruction": "The existing file shown above is the PRE-change version for this exercise. Rewrite backend/src/domain/distribution/taste/generation/taste-generation.mapper.ts so the publish string is authored once and composition.fields.caption is derived from it, per Step 4. Output the complete file.",
+  "reference_file": "backend/src/domain/distribution/taste/generation/taste-generation.mapper.ts"
+}

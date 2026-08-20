@@ -1,0 +1,6 @@
+{
+  "title": "Step 6 — publish-string invariant property tests (no ground truth, judgment)",
+  "runbook": { "file": "docs/delivery/plans/taste-engine-v2/01-publish-string-and-correctness.md", "lines": [211, 240] },
+  "context_files": ["backend/src/domain/distribution/taste/generation/taste-generation.mapper.ts", "backend/src/domain/distribution/text-gates.ts"],
+  "instruction": "Write backend/src/domain/distribution/taste/generation/__tests__/publish-string-invariant.test.ts implementing the property tests Step 6 describes. This repo has a hard rule: a test whose only assertions are .not.toBe / .not.toEqual is forbidden, because 'output changed' is satisfied by a wrong implementation. Assert actual values. Use vitest. Output the complete test file."
+}
