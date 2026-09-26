@@ -50,6 +50,13 @@ export OLLAMA_BASE_URL="http://localhost:11434"
 export OLLAMA_MODEL="qwen3:8b"
 ```
 
+The Ollama instructions above are the original project path. The current
+machine-specific Qwen3.8 serving path uses llama.cpp and llama-swap:
+
+- [Qwen3.8 local coder research](QWEN38_LOCAL_CODER_RESEARCH.md)
+- [Qwen3.8 local coder setup](QWEN38_LOCAL_CODER_SETUP.md)
+- [Current serving stack runbook](serving/README.md)
+
 ## Usage Examples
 
 - "Read the file README.md"

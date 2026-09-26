@@ -35,6 +35,56 @@ curl -s localhost:8080/running      # loaded in RAM right now
 open http://127.0.0.1:8080/ui       # web UI
 ```
 
+The experimental Qwen3.8 MTPLX lane runs separately on port 8000. First verify
+that the runtime, both native-MTP model variants, and all experiment flags are
+available:
+
+```bash
+./mtplx_preflight.sh
+```
+
+The one-time host setup used for this workspace is:
+
+```bash
+brew install youssofal/mtplx/mtplx
+mtplx pull Youssofal/Qwen3.8-27B-MTPLX-Optimized-Speed
+mtplx pull Youssofal/Qwen3.8-27B-MTPLX-Optimized-Quality
+```
+
+Start one experiment without editing the script. The launcher never touches
+llama-swap on `:8080`:
+
+```bash
+./start_mtplx_speed.sh
+```
+
+The launcher exposes the full variation surface through environment variables:
+
+```bash
+MTPLX_MODEL=Youssofal/Qwen3.8-27B-MTPLX-Optimized-Quality \
+MTPLX_CONTEXT_WINDOW=131072 MTPLX_PROFILE=sustained MTPLX_DEPTH=2 \
+MTPLX_KV_QUANTIZATION=q8 ./start_mtplx_speed.sh
+```
+
+Available dimensions are:
+
+| Dimension | Values |
+|---|---|
+| Model | `Optimized-Speed`, `Optimized-Quality` |
+| Profile | `stable`, `performance-cold`, `sustained`, `turbo`, `exact`, `max-diagnostic` |
+| Context | Any supported value; benchmark set: `32768`, `65536`, `131072`, `262144` |
+| Decode | `MTPLX_GENERATION_MODE=ar` or MTP `MTPLX_DEPTH=1`, `2`, `3` |
+| Paged KV | `off`, `q8`, `q4` |
+| MTP quantization | Optional `MTPLX_MTP_QUANT_BITS`, group size, and mode overrides |
+
+Only run one 27B MTPLX model at a time on this 48 GB Mac. `q8` and `q4` paged
+KV are memory experiments, not quality-equivalent defaults; restart the server
+between KV changes. The launcher defaults to the verified turbo/D3/off-KV lane.
+It requests smart fan handling without requiring a privileged ThermalForge
+installation. For repeatable maximum-fan measurements, install ThermalForge
+through MTPLX's documented setup, then use `MTPLX_FAN_MODE=max
+MTPLX_REQUIRE_MAX_FANS=1`.
+
 Full runbook, including removal: `second-brain/knowledge-base/01-ai-and-tools/local-llm-operations.md`.
 
 ## Measured on this machine (M5 Pro, 48 GB)
