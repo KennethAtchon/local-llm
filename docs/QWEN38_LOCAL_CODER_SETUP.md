@@ -1,6 +1,12 @@
 # Qwen3.8 Local Coder Setup
 
 This is the machine-specific setup runbook for the M5 Pro 48 GB system.
+Run the relative `./serving/...` commands below from the repository root.
+For the newer candidates, provenance and go/no-go trial protocol, see
+[Qwen3.8 speed research (2026-09-26)](QWEN38_SPEED_RESEARCH_2026-09-26.md).
+This runbook's MTPLX installation instructions were written before MTPLX
+2.12.0 and Splash; check actual installed versions and supported flags before
+following them. No newer candidate has passed the local acceptance gate.
 
 ## Recommended Architecture
 
@@ -16,8 +22,9 @@ OpenCode
    +--> Optional uncensored MLX profile :8002
 ```
 
-The stable server remains the default until the MTPLX profile passes the
-acceptance tests in this document.
+The stable server remains the default until a candidate passes both the
+acceptance tests in this document and the matched coding-task comparison in
+the September speed research.
 
 ## Profile A: Current Stable Server
 
@@ -110,7 +117,11 @@ also depends on it and will otherwise fall back to keyword-only retrieval.
 ## Profile B: MTPLX Speed A/B Test
 
 MTPLX uses Qwen3.8's native MTP head and exposes an OpenAI-compatible server.
-Install the current release rather than an older Twitter-era build.
+Both native-MTP variants were already installed and smoke-tested on this Mac
+on August 23 (then MTPLX 2.9.1). **Do not re-pull them merely to perform the
+first comparison.** The commands below document setup for a missing lane;
+check the actual installed version and current upstream release before any
+upgrade, and benchmark versions separately rather than silently replacing one.
 
 ```bash
 brew install youssofal/mtplx/mtplx

@@ -4,6 +4,8 @@ The local model server: `llama.cpp` + `llama-swap` on `127.0.0.1:8080`. Replaced
 LM Studio on 2026-08-19.
 
 Live config lives in home directories. This folder is the versioned copy.
+For the dated comparison of this stack against MTPLX, Splash, oMLX and
+DFlash2, see the [2026-09-26 speed research](../docs/QWEN38_SPEED_RESEARCH_2026-09-26.md).
 
 ```
 ./install.sh    repo    -> machine  (deploy + restart + verify)

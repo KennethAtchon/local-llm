@@ -2,6 +2,11 @@
 
 Research date: 2026-08-21
 
+**Historical snapshot.** For the September 26 speed-candidate landscape,
+release versions, new X reports, and a matched-trial decision, read the
+[current speed research](QWEN38_SPEED_RESEARCH_2026-09-26.md). The local
+measurements and model-choice discussion below remain relevant.
+
 ## Executive Decision
 
 This Mac can run Qwen3.8-27B as a useful daily local coding agent.
@@ -141,8 +146,9 @@ treated as this machine's expected speed.
 ## MTPLX Findings
 
 MTPLX is an Apache-2.0 Apple Silicon runtime that exposes an OpenAI-compatible
-server and supports parsed tool calls. The current release page reports version
-2.8.3 and Qwen3.8 support.
+server and supports parsed tool calls. At this document's August 21 research
+date, the release page reported version 2.8.3 and Qwen3.8 support; this is
+**not** a current-version claim (see the September speed research above).
 
 The recommended Qwen3.8 MTPLX speed build reports:
 
